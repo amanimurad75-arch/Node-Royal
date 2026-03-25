@@ -65,4 +65,4 @@ if st.button("✨ اعتماد الحوار"):
     if speech_text: st.success(f"✅ تم تثبيت النص: '{speech_text}'")
 st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown("<p style='text-align:center; opacity:0.8; color:#FFFAFA;'>إشراف وتطوير الملكة: أماني مراد | NODE 2026</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; opacity:0.8; color:#FFFAFA;'>إشراف  : أماني مراد | NODE 2026</p>", unsafe_allow_html=True)
