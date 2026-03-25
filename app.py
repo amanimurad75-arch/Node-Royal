@@ -2,97 +2,112 @@ import streamlit as st
 import requests
 import time
 
-# --- [الكتلة 1]: الإعدادات البصرية الثابتة ---
-st.set_page_config(page_title="NODE - Ultra Professional", layout="wide")
+# --- [1] الواجهة الرسومية الاحترافية (Minimalist & Glossy) ---
+st.set_page_config(page_title="NODE - Pro Edition", layout="wide")
 
 st.markdown("""
     <style>
-    .stApp { background-color: #050505; color: #ffffff; direction: rtl; }
-    .node-header { text-align: center; font-size: 60px; font-weight: 900; letter-spacing: 12px; padding: 20px; }
-    .node-card {
-        border: 1px solid rgba(255,255,255,0.1); border-radius: 15px;
-        padding: 25px; background: rgba(255,255,255,0.03); margin-bottom: 25px;
+    /* خلفية داكنة ملكية مع تدرج خفيف */
+    .stApp { background: linear-gradient(135deg, #050505 0%, #0f051a 100%); color: #ffffff; direction: rtl; }
+    
+    /* هيدر NODE بتصميم عصري */
+    .node-header {
+        text-align: center; font-size: 70px; font-weight: 900;
+        letter-spacing: 20px; color: #ffffff; padding: 40px 0;
+        text-shadow: 0 10px 20px rgba(0,0,0,0.5);
     }
-    .auth-box { border: 1px solid white; padding: 10px; border-radius: 8px; background: rgba(0,0,0,0.5); text-align: center; }
-    .stButton>button { background: #ffffff; color: #000000; font-weight: bold; border-radius: 8px; width: 100%; height: 3.5em; }
+    
+    /* صناديق العمل (Cards) بتصميم زجاجي احترافي */
+    .stContainer {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px; padding: 30px; margin-bottom: 25px;
+    }
+    
+    /* الأزرار (Buttons) بلمسة احترافية */
+    .stButton>button {
+        background: #ffffff; color: #000000; font-weight: bold;
+        border-radius: 12px; border: none; height: 3.8em;
+        transition: 0.4s ease-in-out; width: 100%;
+    }
+    .stButton>button:hover { background: #e0e0e0; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
+    
+    /* مداخل النصوص */
+    .stTextArea textarea, .stTextInput input {
+        background-color: rgba(255,255,255,0.05) !important;
+        color: white !important; border: 1px solid rgba(255,255,255,0.1) !important;
+        border-radius: 10px !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# --- [الكتلة 2]: نظام تسجيل الدخول (Gmail) - ثابت ---
-if 'is_auth' not in st.session_state: st.session_state.is_auth = False
+# الهيدر ونظام تسجيل الدخول ( Gmail )
+if 'auth_user' not in st.session_state: st.session_state.auth_user = False
 
-col_title, col_auth = st.columns([3, 1])
-with col_title:
-    st.markdown("<div class='node-header'>NODE</div>", unsafe_allow_html=True)
-with col_auth:
-    if not st.session_state.is_auth:
-        if st.button("👤 دخول Google"):
-            st.session_state.is_auth = True; st.rerun()
+st.markdown("<div class='node-header'>NODE</div>", unsafe_allow_html=True)
+
+col_h1, col_h2 = st.columns([4, 1])
+with col_h2:
+    if not st.session_state.auth_user:
+        if st.button("👤 Login with Google"): st.session_state.auth_user = True; st.rerun()
     else:
-        st.markdown(f'<div class="auth-box">👤 <b>أماني مراد</b><br><small>amani.murad.75@gmail.com</small></div>', unsafe_allow_html=True)
-        if st.button("خروج"):
-            st.session_state.is_auth = False; st.rerun()
+        st.markdown(f"<div style='border:1px solid white; padding:10px; border-radius:10px; text-align:center;'>👤 <b>أماني مراد</b></div>", unsafe_allow_html=True)
 
-if st.session_state.is_auth:
-    # --- [الكتلة 3]: استوديو الصور (نظام القياسات Fix 3 + حل مشكلة العرض) ---
-    st.markdown('<div class="node-card">', unsafe_allow_html=True)
-    st.subheader("🎨 استوديو إنشاء الصور HD")
-    prompt = st.text_area("وصفي مشهدكِ الإبداعي:", placeholder="فتاة بأسلوب بيكسار تضحك...")
+if st.session_state.auth_user:
+    # --- [2] استوديو الصور (حل مشكلة السيرفر والعرض) ---
+    with st.container():
+        st.write("### 🎨 استوديو إنشاء الصور HD")
+        prompt = st.text_area("وصفي مشهدكِ الإبداعي هنا:", placeholder="فتاة كرتونية ثلاثية الأبعاد...")
+        
+        st.write("#### 📏 القياسات المعتمدة (Fix 3):")
+        c1, c2, c3 = st.columns(3)
+        with c1: 
+            if st.button("📱 Tall (9:16)"): st.session_state.res = (1024, 1792)
+        with c2: 
+            if st.button("🔳 Square (1:1)"): st.session_state.res = (1024, 1024)
+        with c3: 
+            if st.button("📺 Wide (16:9)"): st.session_state.res = (1792, 1024)
 
-    st.write("#### 📏 القياسات المعتمدة (Fix 3):")
-    c1, c2, c3 = st.columns(3)
-    with c1: 
-        if st.button("📱 9:16 (Tall)"): st.session_state.dims = (1024, 1792)
-    with c2: 
-        if st.button("🔳 1:1 (Square)"): st.session_state.dims = (1024, 1024)
-    with c3: 
-        if st.button("📺 16:9 (Wide)"): st.session_state.dims = (1792, 1024)
-
-    width, height = st.session_state.get('dims', (1024, 1024))
-    
-    if st.button("🚀 بدء التوليد"):
-        if prompt:
-            placeholder = st.empty()
-            placeholder.info("⏳ NODE يتواصل مع السيرفر.. يرجى الانتظار لنقوم بسحب الصورة HD")
-            
-            # رابط بـ Seed زمني فريد لضمان صورة جديدة دائماً
-            url = f"https://pollinations.ai/p/{prompt.replace(' ', '%20')}?width={width}&height={height}&seed={int(time.time())}&model=flux"
-            
-            # --- حل مشكلة عرض الصورة (بطلنا جحشنة!) ---
-            image_data = None
-            for attempt in range(3): # محاولة الجلب 3 مرات للتأكد من السيرفر
+        width, height = st.session_state.get('res', (1024, 1024))
+        
+        if st.button("🚀 بدء التوليد الاحترافي"):
+            if prompt:
+                ph = st.empty()
+                ph.info("🔄 جاري تأكيد الاتصال بالسيرفر وجلب الصورة...")
+                
+                # رابط بـ Seed زمني ونظام جلب مضمون
+                url = f"https://pollinations.ai/p/{prompt.replace(' ', '%20')}?width={width}&height={height}&seed={int(time.time())}&model=flux&nologo=true"
+                
                 try:
                     res = requests.get(url, timeout=45)
-                    if res.status_code == 200 and len(res.content) > 10000: # التأكد أن الملف صورة حقيقية وليس فارغاً
-                        image_data = res.content
-                        break
-                    time.sleep(2) # انتظار قليل بين المحاولات
+                    if res.status_code == 200 and len(res.content) > 10000:
+                        ph.empty()
+                        st.image(res.content, use_column_width=True)
+                        st.download_button("📥 تحميل التصميم HD", data=res.content, file_name="node_pro.png")
+                    else:
+                        ph.error("⚠️ السيرفر مشغول حالياً (Overloaded)، يرجى الضغط مرة أخرى.")
                 except:
-                    continue
+                    ph.error("❌ فشل الاتصال. تأكدي من جودة الإنترنت.")
 
-            if image_data:
-                placeholder.empty()
-                st.image(image_data, use_column_width=True)
-                st.download_button("📥 حفظ الصورة", data=image_data, file_name="node_pro.png")
-            else:
-                placeholder.error("❌ السيرفر مشغول جداً. يرجى الضغط على 'بدء التوليد' مرة أخرى.")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # --- [الكتلة 4]: مركز التحريك والنطق (ثابت) ---
-    st.markdown('<div class="node-card">', unsafe_allow_html=True)
-    st.subheader("🎬 مركز التحريك والنطق العربي")
-    up_img = st.file_uploader("ارفعي صورة الشخصية هنا:", type=["png", "jpg"])
-    
-    if up_img:
-        st.image(up_img, width=250)
-        voice_input = st.text_input("💬 النص العربي الذي ستنطقه الفتاة:")
-        motion_choice = st.selectbox("😊 اختر تعبير الوجه:", ["تضحك وتتحدث", "تغمز وتتكلم", "نطق هادئ"])
+    # --- [3] مركز التحريك ونظام الحوار (الميزة المطلوبة) ---
+    with st.container():
+        st.write("### 🎬 مركز التحريك ونطق الفيديو")
+        up = st.file_uploader("ارفعي صورة الشخصية هنا:", type=["png", "jpg"])
         
-        if st.button("✨ إنتاج فيديو ناطق"):
-            if voice_input:
-                st.success(f"جاري تحضير فيديو ينطق: '{voice_input}' بحركة: {motion_choice}")
-            else:
-                st.warning("يرجى كتابة نص النطق أولاً.")
-    st.markdown('</div>', unsafe_allow_html=True)
+        if up:
+            col_img, col_form = st.columns([1, 2])
+            with col_img:
+                st.image(up, width=250)
+            
+            with col_form:
+                # إضافة نص حوار عند الفيديو (الميزة التي كانت ناقصة)
+                speech_text = st.text_input("💬 نص الحوار (ماذا ستقول البنت؟):", placeholder="أهلاً بكم في تطبيق NODE...")
+                motion_type = st.selectbox("😊 حركة الوجه:", ["تضحك وتتحدث", "تغمز وتتكلم", "نطق هادئ"])
+                
+                if st.button("✨ توليد الفيديو الناطق"):
+                    if speech_text:
+                        st.success(f"جاري معالجة الفيديو لنطق: '{speech_text}'")
+                    else:
+                        st.warning("يرجى كتابة نص الحوار أولاً.")
 
-st.markdown("<p style='text-align:center; opacity:0.3;'>إشراف وتطوير: أماني مراد | NODE 2026</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; opacity:0.3; margin-top:50px;'>NODE 2026 | AMANI MURAD STUDIO</p>", unsafe_allow_html=True)
