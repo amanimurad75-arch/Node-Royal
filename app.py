@@ -56,4 +56,57 @@ col_p1, col_p2, col_p3 = st.columns(3)
 with col_p1:
     ratio = st.selectbox("قياس الصورة/الفيديو:", ["1:1 (مربع)", "16:9 (عرضي)", "9:16 (طولي)"])
 with col_p2:
-    duration = st.select_slider("مدة الفيديو (ثواني):", options
+    duration = st.select_slider("مدة الفيديو (ثواني):", options=[5, 10, 15, 20])
+with col_p3:
+    style = st.selectbox("النمط الفني:", ["واقعي HD", "بيكسار 3D", "رسم زيتي", "أنيمي"])
+
+# --- واجهة "اسأل .. تخيل" ---
+st.markdown("---")
+prompt = st.text_input("اكتبي لتتخيلي.. NODE سيحول كلماتكِ لواقع:", placeholder="مثال: Lucy القطة البيضاء تلعب في حديقة بنفسجية...")
+
+if st.button("🚀 توليد العرض"):
+    if prompt:
+        with st.spinner("جاري الاتصال بخوادم NODE..."):
+            # حل مشكلة العرض (توليد رابط مباشر وصحيح)
+            img_url = f"https://pollinations.ai/p/{prompt.replace(' ', '%20')}?width=1024&height=1024&seed=123"
+            
+            try:
+                res = requests.get(img_url)
+                if res.status_code == 200:
+                    # عرض النتيجة كواجهة رسومية متكاملة
+                    st.markdown('<div class="card-style">', unsafe_allow_html=True)
+                    st.image(img_url, caption=f"تم التوليد بقياس {ratio}", use_column_width=True)
+                    
+                    # أزرار التحميل
+                    c_dl1, c_dl2 = st.columns(2)
+                    with c_dl1:
+                        st.download_button("📥 تنزيل الصورة (HD)", data=res.content, file_name="node_image.png")
+                    with c_dl2:
+                        st.button("🎬 معالجة كفيديو متحرك")
+                    st.markdown('</div>', unsafe_allow_html=True)
+                else:
+                    st.error("فشل في تحميل الصورة، يرجى المحاولة مرة أخرى.")
+            except:
+                st.error("خطأ في الاتصال.")
+
+# --- قسم الاقتراحات الرسومية (مثل 1044.jpg) ---
+st.markdown("#### 💡 إلهام من NODE")
+col_s1, col_s2, col_s3, col_s4 = st.columns(4)
+
+suggests = [
+    {"n": "Chibi", "url": "https://pollinations.ai/p/cute%20girl%20chibi?width=200"},
+    {"n": "Sky", "url": "https://pollinations.ai/p/purple%20galaxy%20sky?width=200"},
+    {"n": "Cyber", "url": "https://pollinations.ai/p/cyberpunk%20car?width=200"},
+    {"n": "Nature", "url": "https://pollinations.ai/p/magical%20forest?width=200"}
+]
+
+for i, col in enumerate([col_s1, col_s2, col_s3, col_s4]):
+    with col:
+        st.markdown(f'''
+            <div class="card-style" style="text-align:center;">
+                <img src="{suggests[i]['url']}" style="width:100%; border-radius:10px;">
+                <p>{suggests[i]['n']}</p>
+            </div>
+        ''', unsafe_allow_html=True)
+
+st.caption("إشراف وبرمجة: أماني مراد - NODE 2026")
