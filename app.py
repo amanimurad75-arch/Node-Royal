@@ -2,96 +2,94 @@ import streamlit as st
 import requests
 import time
 
-# --- إعدادات NODE الملكية (النسخة النهائية) ---
-st.set_page_config(page_title="NODE - AI Creative Studio", layout="wide")
+# --- إعدادات NODE الملكية ---
+st.set_page_config(page_title="NODE - Ultra Clean Edition", layout="wide")
 
+# تصميم فخم، مرتب، وبسيط جداً (مستوحى من 1061.jpg)
 st.markdown("""
     <style>
-    .stApp { background-color: #2d0050; color: #f0f8ff; direction: rtl; }
-    .hero-title { text-align: center; font-size: 50px; font-weight: bold; text-shadow: 0px 0px 15px white; }
-    
-    /* تنسيق الأزرار والبوكسات الملكية */
-    .stButton>button { 
-        background: white; color: #2d0050; font-weight: bold; 
-        border-radius: 12px; border: 2px solid #f0f8ff;
+    .stApp {
+        background-color: #1a0033; /* خلفية أرجوانية داكنة سادة */
+        color: #ffffff;
+        direction: rtl;
     }
-    .result-container {
-        border: 2px solid white; border-radius: 20px; 
-        padding: 20px; background: rgba(255,255,255,0.05); margin-top: 10px;
+    .hero-title {
+        text-align: center; font-size: 60px; font-weight: bold;
+        letter-spacing: 8px; padding: 30px; color: #ffffff;
     }
-    .user-info { border: 1px solid white; border-radius: 10px; padding: 10px; background: #4b0082; text-align: center; }
+    .section-card {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px; padding: 25px;
+        background: rgba(255, 255, 255, 0.02); margin-bottom: 25px;
+    }
+    .stButton>button {
+        background: #ffffff; color: #1a0033; font-weight: bold;
+        border-radius: 12px; border: none; height: 3.5em; width: 100%;
+    }
+    /* إخفاء الزوائد لزيادة الترتيب */
+    footer {visibility: hidden;}
     </style>
     """, unsafe_allow_html=True)
 
-# --- الهيدر وبيانات أماني ---
-col_h1, col_h2 = st.columns([8, 2])
-with col_h1:
-    st.markdown("<div class='hero-title'>NODE</div>", unsafe_allow_html=True)
-with col_h2:
-    st.markdown('<div class="user-info">👤 أماني مراد</div>', unsafe_allow_html=True)
+st.markdown("<div class='hero-title'>NODE</div>", unsafe_allow_html=True)
 
-# --- نظام القياسات الاحترافي (كما في Replit 1061.jpg) ---
-st.markdown("### 🎨 استوديو إنشاء الصور HD")
-prompt = st.text_area("صفي إبداعكِ (عربي أو إنجليزي):", placeholder="مثلاً: فتاة صغيرة تضحك وتنطق بالعربية...")
+# --- القسم الأول: إنشاء الصور (حل مشكلة الفشل 1060.jpg) ---
+with st.container():
+    st.markdown('<div class="section-card">', unsafe_allow_html=True)
+    st.subheader("🎨 استوديو التصميم الملكي")
+    
+    prompt = st.text_area("صفي خيالكِ هنا:", placeholder="مثال: فتاة كرتونية تضحك بصوت عالٍ...")
+    
+    st.markdown("#### 📏 اختر الأبعاد بدقة (Fix 3):")
+    c1, c2, c3 = st.columns(3)
+    with c1: 
+        if st.button("📱 9:16 (Tall)"): st.session_state.dim = (1024, 1792)
+    with c2: 
+        if st.button("🔳 1:1 (Square)"): st.session_state.dim = (1024, 1024)
+    with c3: 
+        if st.button("📺 16:9 (Wide)"): st.session_state.dim = (1792, 1024)
 
-st.markdown("#### 📏 اختر أبعاد التصميم (Fix 3):")
-c1, c2, c3 = st.columns(3)
-with c1: 
-    if st.button("📱 9:16 (Tall)"): st.session_state.dims = "1024x1792"
-with c2: 
-    if st.button("🔳 1:1 (Square)"): st.session_state.dims = "1024x1024"
-with c3: 
-    if st.button("📺 16:9 (Wide)"): st.session_state.dims = "1792x1024"
-
-# تحديد الأبعاد الافتراضية
-dims = st.session_state.get('dims', "1024x1024")
-st.info(f"القياس الحالي: {dims}")
-
-if st.button("🚀 توليد وحفظ الإبداع"):
-    if prompt:
-        with st.spinner("⏳ جاري الاتصال بالسيرفر..."):
-            w, h = dims.split('x')
-            # إضافة Seed عشوائي لمنع تكرار الصور الفارغة
+    w, h = st.session_state.get('dim', (1024, 1024))
+    
+    if st.button("🚀 توليد العمل الفني"):
+        if prompt:
+            status = st.empty()
+            status.info("⏳ NODE يقوم برسم فكرتكِ.. يرجى الانتظار")
+            
+            # رابط متطور بـ Seed زمني لمنع الملفات الفارغة
             img_url = f"https://pollinations.ai/p/{prompt.replace(' ', '%20')}?width={w}&height={h}&seed={int(time.time())}&model=flux"
             
             try:
-                response = requests.get(img_url, timeout=30)
-                if response.status_code == 200 and len(response.content) > 1000:
-                    st.markdown('<div class="result-container">', unsafe_allow_html=True)
-                    st.image(response.content, use_column_width=True)
-                    # زر التنزيل الحقيقي
-                    st.download_button("📥 حفظ الصورة بجودة HD", data=response.content, file_name="node_image.png", mime="image/png")
-                    st.markdown('</div>', unsafe_allow_html=True)
+                res = requests.get(img_url, timeout=40)
+                if res.status_code == 200 and len(res.content) > 1000:
+                    status.empty()
+                    st.image(res.content, caption=f"تم التوليد بنجاح ({w}x{h})", use_column_width=True)
+                    st.download_button("📥 حفظ الصورة بجودة HD", data=res.content, file_name="node_pro.png", mime="image/png")
                 else:
-                    st.error("السيرفر مشغول حالياً، يرجى إعادة المحاولة.")
+                    status.error("❌ السيرفر لم يستجب بالكامل، يرجى المحاولة مرة أخرى.")
             except:
-                st.error("فشل في تحميل الصورة.")
+                status.error("❌ فشل الاتصال بالسيرفر.")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-st.divider()
-
-# --- مركز التحريك والنطق (بوكس الصورة) ---
-st.markdown("### 🎬 مركز التحريك والنطق العربي")
-st.markdown('<div style="background:#6a0dad; padding:15px; border-radius:15px; text-align:center;">🖼️ اضغطي أدناه لرفع الصورة</div>', unsafe_allow_html=True)
-
-up_file = st.file_uploader("", type=["png", "jpg", "jpeg"])
-
-if up_file:
-    st.image(up_file, width=250)
+# --- القسم الثاني: النطق والتحريك (طلب أماني 1052.jpg) ---
+with st.container():
+    st.markdown('<div class="section-card">', unsafe_allow_html=True)
+    st.subheader("🎬 مركز النطق والتحريك العربي")
     
-    # مربع حوار النطق والحركة (طلب أماني)
-    st.markdown("#### 💬 ماذا تريدينها أن تقول وتفعل؟")
-    speech = st.text_area("النص العربي (سوف تنطقه الفتاة):", placeholder="اكتبي الكلمات هنا...")
-    motion = st.text_input("وصف الحركة (تضحك، تتكلم، إلخ):")
+    up_img = st.file_uploader("ارفعي صورة الفتاة هنا:", type=["png", "jpg"])
+    
+    if up_img:
+        st.image(up_img, width=250)
+        
+        # مربعات الحوار المرتبة للنطق
+        speech = st.text_input("💬 النص الذي ستنطقه الفتاة (بالعربية):")
+        action = st.selectbox("😊 حركة الوجه المطلوبة:", ["تضحك وتتحدث", "تتكلم بهدوء", "غمزة عين"])
+        
+        if st.button("✨ إنتاج الفيديو الناطق"):
+            if speech:
+                st.success(f"جاري تحريك الصورة لنطق: '{speech}' مع حركة: {action}")
+            else:
+                st.warning("يرجى كتابة النص العربي أولاً.")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    col_v1, col_v2 = st.columns(2)
-    with col_v1: v_size = st.selectbox("القياس:", ["9:16", "1:1", "16:9"])
-    with col_v2: v_type = st.selectbox("النمط:", ["فيديو كامل", "تحريك بسيط"])
-
-    if st.button("✨ ابدأ التحريك والنطق"):
-        if speech:
-            st.success(f"جاري معالجة الفيديو لنطق: {speech}")
-            st.info(f"الحركة المطلوبة: {motion}")
-        else:
-            st.warning("يرجى كتابة النص العربي أولاً.")
-
-st.caption("تطوير: أماني مراد - NODE 2026")
+st.markdown("<div style='text-align:center; opacity:0.4;'>إشراف وتطوير: أماني مراد | NODE 2026</div>", unsafe_allow_html=True)
